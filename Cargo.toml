@@ -1,0 +1,11 @@
+[package]
+name = "rust-fit-portal-scraper"
+version = "0.1.0"
+edition = "2021"
+description = "https://www.fit-portal.go.jp/PublicInfo"
+repository = "https://github.com/wakame1367/rust-fit-portal-scraper"
+license = "MIT OR Apache-2.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
