@@ -7,6 +7,7 @@ mod tests {
     use super::*;
     use httpmock::Method::GET;
     use httpmock::MockServer;
+    use url::Url;
 
     #[tokio::test]
     async fn test_fetch_page() {
@@ -30,6 +31,25 @@ mod tests {
 
         // Ensure the mock was called.
         mock.assert();
+    }
+    #[tokio::test]
+    async fn test_extract_download_link() {
+        let base = Url::parse("https://www.fit-portal.go.jp/PublicInfo").unwrap();
+        let page = r#"
+        <html>
+            <body>
+                <a href="servlet.FileDownload?file=00P0K00002BkA63UAF">Download</a>
+            </body>
+        </html>
+        "#;
+
+        let expected = Url::parse(
+            "https://www.fit-portal.go.jp/PublicInfo/servlet.FileDownload?file=00P0K00002BkA63UAF",
+        )
+        .unwrap();
+        let actual = extract_download_link(page, &base).await.unwrap();
+
+        assert_eq!(actual, expected);
     }
 }
 
