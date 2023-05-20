@@ -2,6 +2,39 @@ use reqwest::Error;
 use scraper::{Html, Selector};
 use url::Url;
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use httpmock::Method::GET;
+    use httpmock::{Mock, MockServer};
+
+    #[tokio::test]
+    async fn test_fetch_page() {
+        // Start a mock server.
+        let server = MockServer::start().await;
+
+        // Define a mock.
+        let mock = Mock::new()
+            .expect_method(GET)
+            .expect_path("/PublicInfo")
+            .return_status(200)
+            .return_body("This is the mock response body")
+            .create_on(&server);
+
+        // The URL to be fetched is the mock server URL.
+        let url = server.url("/PublicInfo");
+
+        // Call the function to be tested.
+        let response = fetch_page(&url).await.unwrap();
+
+        // Check the response.
+        assert_eq!(response, "This is the mock response body");
+
+        // Ensure the mock was called.
+        mock.assert_hits(1);
+    }
+}
+
 async fn fetch_page(url: &str) -> Result<String, Error> {
     let text = reqwest::get(url).await?.text().await?;
     Ok(text)
