@@ -6,20 +6,18 @@ use url::Url;
 mod tests {
     use super::*;
     use httpmock::Method::GET;
-    use httpmock::{Mock, MockServer};
+    use httpmock::MockServer;
 
     #[tokio::test]
     async fn test_fetch_page() {
         // Start a mock server.
-        let server = MockServer::start().await;
+        let server = MockServer::start();
 
         // Define a mock.
-        let mock = Mock::new()
-            .expect_method(GET)
-            .expect_path("/PublicInfo")
-            .return_status(200)
-            .return_body("This is the mock response body")
-            .create_on(&server);
+        let mock = server.mock(|when, then| {
+            when.method(GET).path("/PublicInfo");
+            then.status(200).body("This is the mock response body");
+        });
 
         // The URL to be fetched is the mock server URL.
         let url = server.url("/PublicInfo");
@@ -31,7 +29,7 @@ mod tests {
         assert_eq!(response, "This is the mock response body");
 
         // Ensure the mock was called.
-        mock.assert_hits(1);
+        mock.assert();
     }
 }
 
