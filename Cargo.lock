@@ -1607,6 +1607,7 @@ dependencies = [
  "httpmock",
  "reqwest",
  "scraper",
+ "tempfile",
  "tokio",
  "url",
 ]
